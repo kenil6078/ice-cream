@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Document</title>
+          <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+</head>
+<body>
+          <div class="w-full h-screen">
+                    <div class="parent w-full h-[1400vh] bg-black relative">
+                              <div class="w-full h-screen sticky top-0 left-0">
+                                        <canvas class="w-full h-screen" id="canvas"></canvas>
+                              </div>
+                    </div>
+          </div>
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js" integrity="sha512-NcZdtrT77bJr4STcmsGAESr06BYGE8woZdSdEgqnpyqac7sugNO+Tr4bGwGF3MsnEkGKhU2KL2xh6Ec+BqsaHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js" integrity="sha512-P2IDYZfqSwjcSjX0BKeNhwRUH8zRPGlgcWl5n6gBLzdi4Y5/0O4zaXrtO4K9TZK6Hn1BenYpKowuCavNandERg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+          <script>
+                    const canvas = document.querySelector("#canvas");
+                    const context = canvas.getContext("2d");
+                    const frames = {
+                              currentIndex: 0,
+                              maxIndex:782
+                    }
+                    let images =[];
+                    let imageLoaded = 0;
+                  function preLoadImages(){
+                    for(var i=1;i<=frames.maxIndex;i++){
+                              const imgUrl = `./frame/frame_${i.toString().padStart(4,"0")}.jpeg`;
+                              var img = new Image();
+                              img.src = imgUrl;
+
+                              img.onload = function(){
+                                        imageLoaded++;
+                                        if(imageLoaded === frames.maxIndex){
+                                                  console.log("All Loaded");
+
+                                                  loadImage(frames.currentIndex);
+                                                  startAnimation()
+                                                  
+                                        }
+                              }
+                              images.push(img);
+
+                    }
+                  }  
+                  preLoadImages();
+
+                  function loadImage(index){
+                    if(index>=0 && index<=frames.maxIndex){
+                              const img = images[index];
+                              canvas.width = window.innerWidth;
+                              canvas.height = window.innerHeight;
+
+                              const scaleX = canvas.width / img.width;
+                              const scaleY = canvas.height / img.height;
+
+
+                              const newWidth = img.width * scaleX;
+                              const newHeight = img.height * scaleY;
+
+                              const offsetX = (canvas.width - newWidth)/2;
+                              const offsetY = (canvas.height - newHeight)/2;
+
+
+                              context.clearRect(0, 0, canvas.width, canvas.height);
+                              context.imageSmoothingEnabled = true;
+                              context.imageSmoothingQuality = "high";
+                              context.drawImage(img, offsetX, offsetY, newWidth, newHeight);
+                              frames.currentIndex = index;
+                    }
+                  }
+                  
+                  function startAnimation(){
+                    var tl = gsap.timeline({
+                              scrollTrigger:{
+                                        trigger:".parent",
+                                        start:"top top",
+                                        scrub:2,
+                                        end:"bottom bottom",
+
+                              }
+                    })
+
+                    tl.to(frames,{
+                              currentIndex:frames.maxIndex,
+                              onUpdate: function(){
+                                        loadImage(Math.floor(frames.currentIndex));
+                              }
+                    })
+                  }
+</script>
+</body>
+</html>
