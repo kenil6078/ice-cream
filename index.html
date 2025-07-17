@@ -9,9 +9,9 @@
 </head>
 <body>
           <div class="w-full h-screen">
-                    <div class="parent w-full h-[1400vh] bg-black relative">
+                    <div class="parent w-full h-[600vh] bg-black relative bg-orange-300">
                               <div class="w-full h-screen sticky top-0 left-0">
-                                        <canvas class="w-full h-screen" id="canvas"></canvas>
+                                        <canvas class="w-[40rem] h-[30rem] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" id="canvas"></canvas>
                               </div>
                     </div>
           </div>
@@ -23,13 +23,13 @@
                     const context = canvas.getContext("2d");
                     const frames = {
                               currentIndex: 0,
-                              maxIndex:782
+                              maxIndex:360
                     }
                     let images =[];
                     let imageLoaded = 0;
                   function preLoadImages(){
                     for(var i=1;i<=frames.maxIndex;i++){
-                              const imgUrl = `./frame/frame_${i.toString().padStart(4,"0")}.jpeg`;
+                              const imgUrl = `./frame/${i.toString().padStart(4,"0")}.png`;
                               var img = new Image();
                               img.src = imgUrl;
 
