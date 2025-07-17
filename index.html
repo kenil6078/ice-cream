@@ -77,68 +77,24 @@
                     }
                   }
                   
-                    // Auto render images on load
-                    function autoRenderImages() {
-                    let idx = 0;
-                    function render() {
-                      loadImage(idx);
-                      idx++;
-                      if (idx < frames.maxIndex) {
-                      requestAnimationFrame(render);
-                      }
-                    }
-                    render();
-                    }
-
-                    // Mouse scroll to change images
-                    window.addEventListener("wheel", function(e) {
-                    if (images.length !== frames.maxIndex) return;
-                    if (e.deltaY > 0) {
-                      frames.currentIndex = Math.min(frames.currentIndex + 1, frames.maxIndex - 4);
-                    } else {
-                      frames.currentIndex = Math.max(frames.currentIndex - 1, 0);
-                    }
-                    loadImage(frames.currentIndex);
-                    });
-
-                    // Start GSAP scroll animation
-                    function startAnimation(){
+                  function startAnimation(){
                     var tl = gsap.timeline({
-                          scrollTrigger:{
-                              trigger:".parent",
-                              start:"top top",
-                              scrub:1,
-                              end:"bottom bottom",
-                          }
+                              scrollTrigger:{
+                                        trigger:".parent",
+                                        start:"top top",
+                                        scrub:1,
+                                        end:"bottom bottom",
+
+                              }
                     })
 
                     tl.to(frames,{
-                          currentIndex:frames.maxIndex - 1,
-                          onUpdate: function(){
-                              loadImage(Math.floor(frames.currentIndex));
-                          }
-                    })
-                    }
-
-                    // Call autoRenderImages after images are loaded
-                    function preLoadImages(){
-                    for(var i=1;i<=frames.maxIndex;i++){
-                          const imgUrl = `./frame/${i.toString().padStart(4,"0")}.png`;
-                          var img = new Image();
-                          img.src = imgUrl;
-
-                          img.onload = function(){
-                              imageLoaded++;
-                              if(imageLoaded === frames.maxIndex){
-                                    console.log("All Loaded");
-                                    loadImage(frames.currentIndex);
-                                    autoRenderImages();
-                                    startAnimation();
+                              currentIndex:frames.maxIndex,
+                              onUpdate: function(){
+                                        loadImage(Math.floor(frames.currentIndex));
                               }
-                          }
-                          images.push(img);
-                    }
-                    }
+                    })
+                  }
 </script>
 </body>
 </html>
