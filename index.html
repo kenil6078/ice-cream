@@ -9,10 +9,13 @@
 </head>
 <body>
           <div class="w-full h-screen">
-                    <div class="parent w-full h-[600vh] bg-black relative bg-orange-300">
-                              <div class="w-full h-screen sticky top-0 left-0">
-                                        <canvas class="w-[40rem] h-[30rem] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" id="canvas"></canvas>
+                    <div class="parent w-full h-[1200vh] relative">
+                              <div class="w-full h-screen sticky bg-[url('./photos/20240544.png')] bg-cover bg-center top-0 left-0">
+                                        <canvas class="w-[28rem] h-[28rem] absolute top-3/6 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[-12deg] mt-[2.8rem]" id="canvas"></canvas>
                               </div>
+                    </div>
+                    <div class="w-full h-screen sticky bg-[url('./photos/20240544.png')] bg-cover bg-center top-0 left-0">
+                              <canvas class="w-[28rem] h-[28rem] absolute top-3/6 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-[-12deg] mt-[2.8rem]" id="canvas"></canvas>
                     </div>
           </div>
           <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js" integrity="sha512-NcZdtrT77bJr4STcmsGAESr06BYGE8woZdSdEgqnpyqac7sugNO+Tr4bGwGF3MsnEkGKhU2KL2xh6Ec+BqsaHA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -74,24 +77,68 @@
                     }
                   }
                   
-                  function startAnimation(){
-                    var tl = gsap.timeline({
-                              scrollTrigger:{
-                                        trigger:".parent",
-                                        start:"top top",
-                                        scrub:1,
-                                        end:"bottom bottom",
+                    // Auto render images on load
+                    function autoRenderImages() {
+                    let idx = 0;
+                    function render() {
+                      loadImage(idx);
+                      idx++;
+                      if (idx < frames.maxIndex) {
+                      requestAnimationFrame(render);
+                      }
+                    }
+                    render();
+                    }
 
-                              }
+                    // Mouse scroll to change images
+                    window.addEventListener("wheel", function(e) {
+                    if (images.length !== frames.maxIndex) return;
+                    if (e.deltaY > 0) {
+                      frames.currentIndex = Math.min(frames.currentIndex + 1, frames.maxIndex - 4);
+                    } else {
+                      frames.currentIndex = Math.max(frames.currentIndex - 1, 0);
+                    }
+                    loadImage(frames.currentIndex);
+                    });
+
+                    // Start GSAP scroll animation
+                    function startAnimation(){
+                    var tl = gsap.timeline({
+                          scrollTrigger:{
+                              trigger:".parent",
+                              start:"top top",
+                              scrub:1,
+                              end:"bottom bottom",
+                          }
                     })
 
                     tl.to(frames,{
-                              currentIndex:frames.maxIndex,
-                              onUpdate: function(){
-                                        loadImage(Math.floor(frames.currentIndex));
-                              }
+                          currentIndex:frames.maxIndex - 1,
+                          onUpdate: function(){
+                              loadImage(Math.floor(frames.currentIndex));
+                          }
                     })
-                  }
+                    }
+
+                    // Call autoRenderImages after images are loaded
+                    function preLoadImages(){
+                    for(var i=1;i<=frames.maxIndex;i++){
+                          const imgUrl = `./frame/${i.toString().padStart(4,"0")}.png`;
+                          var img = new Image();
+                          img.src = imgUrl;
+
+                          img.onload = function(){
+                              imageLoaded++;
+                              if(imageLoaded === frames.maxIndex){
+                                    console.log("All Loaded");
+                                    loadImage(frames.currentIndex);
+                                    autoRenderImages();
+                                    startAnimation();
+                              }
+                          }
+                          images.push(img);
+                    }
+                    }
 </script>
 </body>
 </html>
